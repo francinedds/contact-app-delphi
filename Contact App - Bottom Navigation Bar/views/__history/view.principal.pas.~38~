@@ -1,0 +1,218 @@
+unit view.principal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Imaging.pngimage,
+  Vcl.Buttons, Vcl.WinXPanels, Vcl.StdCtrls, Vcl.WinXCtrls, Vcl.ComCtrls,
+  view.mensagem, service.conexao, Vcl.Menus;
+
+type
+  TViewPrincipal = class(TForm)
+    pnlBackground: TPanel;
+    CardPanel: TCardPanel;
+    CardHome: TCard;
+    imagePrincipal: TImage;
+    CardContatos: TCard;
+    SearchBox: TSearchBox;
+    ListView: TListView;
+    CardNovoContato: TCard;
+    lblTitleCardNovoContato: TLabel;
+    edtNomeCompleto: TEdit;
+    lblNomeCompleto: TLabel;
+    lblTelefone: TLabel;
+    edtTelefone: TEdit;
+    pnlBtnSalvar: TPanel;
+    btnSalvar: TSpeedButton;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    TimerMenu: TTimer;
+    bg: TImage;
+    bgCardNovoContato: TImage;
+    bgCardContatos: TImage;
+    lblTitle: TLabel;
+    lineCardContato: TPanel;
+    Panel3: TPanel;
+    PopupMenu: TPopupMenu;
+    Editar1: TMenuItem;
+    Deletar1: TMenuItem;
+    bgMenu: TImage;
+    iconHome: TImage;
+    iconPhone: TImage;
+    iconSearch: TImage;
+    iconUserPlus: TImage;
+    iconFavorite: TImage;
+    bgMenu2: TImage;
+    iconMenu2: TImage;
+    iconPhone2: TImage;
+    iconSearch2: TImage;
+    iconUserPlus2: TImage;
+    iconFavorite2: TImage;
+    bgMenu3: TImage;
+    bgHome3: TImage;
+    iconPhone3: TImage;
+    iconSearch3: TImage;
+    iconUserPlus3: TImage;
+    iconFavorite3: TImage;
+    iconMenu: TImage;
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
+    procedure homeCardContatosClick(Sender: TObject);
+    procedure iconHomeClick(Sender: TObject);
+    procedure homeCardNovoContatoClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure SearchBoxChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure SearchBoxEnter(Sender: TObject);
+    procedure btnBuscaClick(Sender: TObject);
+    procedure iconUserPlusClick(Sender: TObject);
+    procedure iconPhoneClick(Sender: TObject);
+    procedure iconFavoriteClick(Sender: TObject);
+    procedure iconSearchClick(Sender: TObject);
+    procedure iconMenuClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure ExibirContatos(const Filtro: string);
+  public
+    { Public declarations }
+  end;
+
+var
+  ViewPrincipal: TViewPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+procedure TViewPrincipal.btnBuscaClick(Sender: TObject);
+begin
+   CardPanel.ActiveCard := CardContatos;
+end;
+
+procedure TViewPrincipal.btnSalvarClick(Sender: TObject);
+begin
+  ViewMensagem := TViewMensagem.Create(Self);
+  try
+    ViewMensagem.ShowModal;
+  finally
+     FreeAndNil(ViewMensagem);
+  end;
+end;
+
+procedure TViewPrincipal.ExibirContatos(const Filtro: string);
+  var
+  NomeCompleto, Telefone: string;
+  ListItem: TListItem;
+begin
+  ListView.Items.BeginUpdate;
+
+  try
+    ListView.Items.Clear;
+
+    // filtro
+    ServiceConexao.FDQuery_Pessoas.Close;
+    ServiceConexao.FDQuery_Pessoas.SQL.Text :=
+      'SELECT pes_codigo, pes_nomecompleto, pes_telefone, pes_email ' +
+      'FROM Pessoas ' +
+      'WHERE LOWER(pes_nomecompleto) LIKE :filtro';
+    ServiceConexao.FDQuery_Pessoas.ParamByName('filtro').AsString := '%' + LowerCase(Filtro) + '%';
+    ServiceConexao.FDQuery_Pessoas.Open;
+
+    // preenche com os dados filtrados
+    while not ServiceConexao.FDQuery_Pessoas.Eof do
+    begin
+      NomeCompleto := ServiceConexao.FDQuery_Pessoas.FieldByName('pes_nomecompleto').AsString;
+      Telefone     := ServiceConexao.FDQuery_Pessoas.FieldByName('pes_telefone').AsString;
+
+      ListItem := ListView.Items.Add;
+      ListItem.Caption := NomeCompleto;
+      ListItem.SubItems.Add(Telefone);
+
+      ServiceConexao.FDQuery_Pessoas.Next;
+    end;
+
+    ServiceConexao.FDQuery_Pessoas.Close;
+  finally
+    ListView.Items.EndUpdate;
+  end;
+end;
+
+procedure TViewPrincipal.FormCreate(Sender: TObject);
+var
+region : hrgn;
+begin
+  CardPanel.ActiveCard := CardHome;
+
+  //arredondar os cantos
+  begin
+    region:= CreateRoundRectRgn(0, 0, width, height, 20, 20);
+    setwindowrgn(handle, region, true);
+  end;
+end;
+
+procedure TViewPrincipal.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #27 then
+  begin
+    Close;
+  end;
+end;
+
+procedure TViewPrincipal.FormShow(Sender: TObject);
+begin
+  ExibirContatos(SearchBox.Text);
+end;
+
+procedure TViewPrincipal.homeCardContatosClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardHome;
+end;
+
+procedure TViewPrincipal.homeCardNovoContatoClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardHome;
+end;
+
+procedure TViewPrincipal.iconHomeClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardHome;
+end;
+
+procedure TViewPrincipal.iconMenuClick(Sender: TObject);
+begin
+   ShowMessage('Função não implementada, tente os ícones abaixo.');
+end;
+
+procedure TViewPrincipal.iconPhoneClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardContatos;
+end;
+
+procedure TViewPrincipal.iconSearchClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardContatosSearch;
+end;
+
+procedure TViewPrincipal.iconUserPlusClick(Sender: TObject);
+begin
+  CardPanel.ActiveCard := CardNovoContato;
+end;
+
+procedure TViewPrincipal.iconFavoriteClick(Sender: TObject);
+begin
+  ShowMessage('Error 404 page not found.');
+end;
+
+procedure TViewPrincipal.SearchBoxChange(Sender: TObject);
+begin
+  ExibirContatos(SearchBox.Text);
+end;
+
+procedure TViewPrincipal.SearchBoxEnter(Sender: TObject);
+begin // limpa searchbox ao clicar
+  SearchBox.Text := '';
+end;
+
+end.
+
