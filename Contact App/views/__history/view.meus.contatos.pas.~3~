@@ -1,0 +1,48 @@
+unit view.meus.contatos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.Imaging.pngimage,
+  Vcl.ExtCtrls, view.principal;
+
+type
+  TViewMeusContatos = class(TForm)
+    pnlBackground: TPanel;
+    Image1: TImage;
+    Image3: TImage;
+    pnlMenu: TPanel;
+    btnContatos: TSpeedButton;
+    btnNovoContato: TSpeedButton;
+    lineDetail: TPanel;
+    lineDetail2: TPanel;
+    procedure Image3Click(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ViewMeusContatos: TViewMeusContatos;
+
+implementation
+
+{$R *.dfm}
+
+procedure TViewMeusContatos.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #27 then
+  begin
+    Close;
+  end;
+end;
+
+procedure TViewMeusContatos.Image3Click(Sender: TObject);
+begin
+  View
+end;
+
+end.

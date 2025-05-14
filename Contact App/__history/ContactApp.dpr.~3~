@@ -1,0 +1,15 @@
+program ContactApp;
+
+uses
+  Vcl.Forms,
+  view.principal in 'views\view.principal.pas' {ViewPrincipal},
+  view.meus.contatos in 'views\view.meus.contatos.pas' {ViewMeusContatos};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TViewPrincipal, ViewPrincipal);
+  Application.Run;
+end.
